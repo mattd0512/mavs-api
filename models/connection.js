@@ -1,31 +1,30 @@
-///////////////////////////////////////////////////////////
-// User resourse (schema and model)
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-// Import our dependencies
-///////////////////////////////////////////////////////////
-const mongoose = require ('./connection')
+/////////////////////////////////////////////
+// import dependencies
+/////////////////////////////////////////////
+require("dotenv").config() // Load ENV Variables
+const mongoose = require("mongoose") // import mongoose
 
-const { Schema, model } = mongoose
+/////////////////////////////////////////////
+// Database Connection
+/////////////////////////////////////////////
+// this is where we will set up our inputs for our database connect function
+const DATABASE_URL = process.env.DATABASE_URL
+// here is our DB config object
+const CONFIG = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}
+// establish our connection
+mongoose.connect(DATABASE_URL, CONFIG)
 
-///////////////////////////////////////////////////////////
-// define our schema
-///////////////////////////////////////////////////////////
-const userSchema = new Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    }
-})
+// tell mongoose what to do with certain events
+// opens, disconnects, errors
+mongoose.connection
+    .on("open", () => console.log("Connected to Mongoose"))
+    .on("close", () => console.log("Disconnected from Mongoose"))
+    .on("error", (error) => console.log("An error occurred: \n", error))
 
-const User = model("User", userSchema)
-
-///////////////////////////////////////////////////////////
-// Export our model
-///////////////////////////////////////////////////////////
-module.exports = User
+/////////////////////////////////////////////
+// export our connection
+/////////////////////////////////////////////
+module.exports = mongoose

@@ -5,24 +5,23 @@ const express = require("express")
 const Mav = require("../models/mav")
 
 /////////////////////////////////////////
-// Create Route
+// Create Router
 /////////////////////////////////////////
 const router = express.Router()
 
 /////////////////////////////////////////////
 // Routes
 ////////////////////////////////////////////
-
-
 // GET request
 // index route -> shows all instances of a document in the db
 router.get("/", (req, res) => {
-    console.log("this is the request", req)
+    // console.log("this is the request", req)
     // in our index route, we want to use mongoose model methods to get our data
     Mav.find({})
+        .populate("comments.author", "username")
         .then(mavs => {
             // this is fine for initial testing
-            // res.send(car
+            // res.send(fruits)
             // this the preferred method for APIs
             res.json({ mavs: mavs })
         })
@@ -32,46 +31,69 @@ router.get("/", (req, res) => {
 // POST request
 // create route -> gives the ability to create new fruits
 router.post("/", (req, res) => {
-    console.log('this is our initial req.body', req.body)
     // here, we'll get something called a request body
     // inside this function, that will be referred to as req.body
+    // this is going to add ownership, via a foreign key reference, to our fruits
+    // basically, all we have to do, is append our request body, with the `owner` field, and set the value to the logged in user's id
+    req.body.owner = req.session.userId
     // we'll use the mongoose model method `create` to make a new fruit
     Mav.create(req.body)
-        .then(mav => {
+        .then(Mav => {
             // send the user a '201 created' response, along with the new fruit
             res.status(201).json({ mav: mav.toObject() })
         })
         .catch(error => console.log(error))
 })
 
+// GET request
+// only fruits owned by logged in user
+// we're going to build another route, that is owner specific, to list all the fruits owned by a certain(logged in) user
+router.get('/mine', (req, res) => {
+    // find the fruits, by ownership
+    Mav.find({ owner: req.session.userId })
+    // then display the fruits
+        .then(mavs => {
+            res.status(200).json({ mavs: mavs })
+        })
+    // or throw an error if there is one
+        .catch(error => res.json(error))
+})
+
 // PUT request
-// update route -> updates a specific car
+// update route -> updates a specific fruit
 router.put("/:id", (req, res) => {
     // console.log("I hit the update route", req.params.id)
     const id = req.params.id
-    
-    // for now, we'll use a simple mongoose model method, eventually we'll update this(and all) routes and we'll use a different method
-    // we're using findByIdAndUpdate, which needs three arguments
-    // it needs an id, it needs the req.body, and whether the info is new
-    Mav.findByIdAndUpdate(id, req.body, { new: true })
-        .then(fruit => {
-            console.log('the car from update', mav)
-            // update success is called '204 - no content'
-            res.sendStatus(204)
+    Mav.findById(id)
+        .then(mav => {
+            if (mav.owner == req.session.userId) {
+                res.sendStatus(204)
+                return mav.updateOne(req.body)
+            } else {
+                res.sendStatus(401)
+            }
         })
-        .catch(err => console.log(err))
+        .catch(error => res.json(error))
 })
 
 // DELETE request
-// destroy route -> finds and deletes a single resource(car)
+// destroy route -> finds and deletes a single resource(fruit)
 router.delete("/:id", (req, res) => {
     // grab the id from the request
     const id = req.params.id
-    // find and delete the car
-    Mav.findByIdAndRemove(id)
-        // send a 204 if successful
-        .then(() => {
-            res.sendStatus(204)
+    // find and delete the fruit
+    // Fruit.findByIdAndRemove(id)
+    Mav.findById(id)
+        .then(mav => {
+            // we check for ownership against the logged in user's id
+            if (mav.owner == req.session.userId) {
+                // if successful, send a status and delete the fruit
+                res.sendStatus(204)
+                return mav .deleteOne()
+            } else {
+                // if they are not the user, send the unauthorized status
+                res.sendStatus(401)
+            }
         })
         // send the error if not
         .catch(err => res.json(err))
@@ -83,10 +105,16 @@ router.get("/:id", (req, res) => {
     const id = req.params.id
 
     Mav.findById(id)
+        // populate will provide more data about the document that is in the specified collection
+        // the first arg is the field to populate
+        // the second can specify which parts to keep or which to remove
+        // .populate("owner", "username")
+        // we can also populate fields of our subdocuments
+        .populate("comments.author", "username")
         .then(mav => {
             res.json({ mav: mav })
         })
-        .catch(err => console.log(mav))
+        .catch(err => console.log(err))
 })
 
 
