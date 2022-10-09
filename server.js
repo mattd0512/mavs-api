@@ -7,15 +7,16 @@ const express = require("express") // import express
 // we don't need this dependency anymore, because it lives in models/connection.js
 // const mongoose = require("mongoose") // import mongoose
 const path = require("path") // import path module
-// const CarRouter = require('./controllers/fruitControllers')
-const UserRouter = require('./controllers/userController')
-const MavRouter = require('./controllers/mavController')
+const MavRouter = require('./controllers/mavControllers')
+const UserRouter = require('./controllers/userControllers')
+const CommentRouter = require('./controllers/commentControllers')
 const middleware = require('./utils/middleware')
 
 /////////////////////////////////////////////
 // Create our Express Application Object
 /////////////////////////////////////////////
-const app = express()
+// const app = express()
+const app = require('liquid-express-views')(express())
 
 /////////////////////////////////////////////
 // Middleware
@@ -40,9 +41,9 @@ app.get("/", (req, res) => {
 // here is where we register our routes, this is how server.js knows to send the appropriate request to the appropriate route and send the correct response
 // app.use, when we register a route, needs two arguments
 // the first, is the base url endpoint, the second is the file to use
-// app.use('/Cars', CarRouter)
-app.use('/users', UserRouter)
 app.use('/mavs', MavRouter)
+app.use('/comments', CommentRouter)
+app.use('/users', UserRouter)
 
 /////////////////////////////////////////////
 // Server Listener
@@ -50,4 +51,4 @@ app.use('/mavs', MavRouter)
 const PORT = process.env.PORT
 app.listen(PORT, () => console.log(`Now listening to the sweet sounds of port: ${PORT}`))
 
-// THE END
+// END

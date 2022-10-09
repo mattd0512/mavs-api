@@ -1,0 +1,32 @@
+{% layout 'layout.liquid' %}
+{% block content %}
+  <div>
+    <h2 class="display-6">All Mavs</h2>
+    <div class="row">
+      {% for mav in mavs %}
+        <div class="card">
+          <h5 class="card-header">{{mavs.name}}
+          </h5>
+          <div class="card-body">
+            <h5 class="card-title">
+              {% if mav.readyToPlay %}
+                Start
+              {% else %}
+                Bench
+              {% endif %}
+            </h5>
+            <p class="card-text">The position of this
+              {{mav.name}}
+              is
+              {{mav.position}}
+            </p>
+            <a class="btn btn-info" href="/mavs/{{mavs.id}}">
+              View
+              {{mav.name}}
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}}}}}}}}}

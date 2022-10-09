@@ -13,7 +13,15 @@ const router = express.Router()
 /////////////////////////////////////////
 // Routes
 /////////////////////////////////////////
-// route for sign up
+
+// GET route for sign up
+// renders a page with a signup form
+router.get('/signup', (req, res) => {
+    res.render('users/signup')
+})
+
+// POST route for sign up
+// talks to the database, gets data from the signup form, creates a new user if possible
 router.post('/signup', async (req, res) => {
     // this route will receive a req.body
     console.log('this is our initial req.body', req.body)
@@ -38,7 +46,14 @@ router.post('/signup', async (req, res) => {
         })
 })
 
-// a route for log in
+// GET route for logging in
+// renders a page with a signup form
+router.get('/login', (req, res) => {
+    res.render('users/login')
+})
+
+// POST route for logging in
+// receives user credentials and creates a session
 router.post('/login', async (req, res) => {
     // get our data from the req body, saved as separate variables
     const { username, password } = req.body

@@ -31,11 +31,11 @@ const db = mongoose.connection
 db.on('open', () => {
     // bring in the array of starter fruits
     const startMavs = [
-        { name: "Orange", color: "orange", readyToEat: false },
-        { name: "Grape", color: "purple", readyToEat: false },
-        { name: "Banana", color: "orange", readyToEat: false },
-        { name: "Strawberry", color: "red", readyToEat: false },
-        { name: "Coconut", color: "brown", readyToEat: false},
+        { name: "Luka Doncic", position: "Point Huard", readyToPlay: false },
+        { name: "Spencer Dinwiddie", position: "Shooting Guard", readyToPlay: false },
+        { name: "Doe Finney-Smith", position: "Power Forward", readyToPlay: false },
+        { name: "Reggie Bullock", position: "Small Forward", readyToPlay: false },
+        { name: "Javale McGee", position: "Center", readyToPlay: false},
     ]
 
     // delete all the existing fruits

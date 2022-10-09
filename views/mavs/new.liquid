@@ -1,0 +1,22 @@
+{% layout 'layout.liquid' %}
+{% block content %}
+
+  <div class="container-sm">
+    <form action="/mavs" method="POST">
+      <fieldset>
+        <legend>Create New Mav</legend>
+        <label class="form-label">Name:
+        </label>
+        <input class="form-control" type="text" name="name" placeholder="enter the name of the mav">
+        <label class="form-label">Color:
+        </label>
+        <input class="form-control" type="text" name="color" placeholder="what position is the mav?">
+        <label class="form-label">Ready To Play:
+        </label>
+        <input class="form-check-input" type="checkbox" name="readyToPlay">
+      </fieldset>
+      <input class="btn btn-success" type="submit" value="Create New Mav">
+    </form>
+  </div>
+
+{% endblock %}}}

@@ -20,10 +20,13 @@ router.get("/", (req, res) => {
     Mav.find({})
         .populate("comments.author", "username")
         .then(mavs => {
+            // console.log(fruits)
             // this is fine for initial testing
             // res.send(fruits)
             // this the preferred method for APIs
-            res.json({ mavs: mavs })
+            // res.json({ fruits: fruits })
+            // here, we're going to render a page, but we can also send data that we got from the database to that liquid page for rendering
+            res.render('mavs/index', { fruits })
         })
         .catch(err => console.log(err))
 })
@@ -38,7 +41,7 @@ router.post("/", (req, res) => {
     req.body.owner = req.session.userId
     // we'll use the mongoose model method `create` to make a new fruit
     Mav.create(req.body)
-        .then(Mav => {
+        .then(mav => {
             // send the user a '201 created' response, along with the new fruit
             res.status(201).json({ mav: mav.toObject() })
         })
@@ -89,7 +92,7 @@ router.delete("/:id", (req, res) => {
             if (mav.owner == req.session.userId) {
                 // if successful, send a status and delete the fruit
                 res.sendStatus(204)
-                return mav .deleteOne()
+                return mav.deleteOne()
             } else {
                 // if they are not the user, send the unauthorized status
                 res.sendStatus(401)
@@ -112,7 +115,11 @@ router.get("/:id", (req, res) => {
         // we can also populate fields of our subdocuments
         .populate("comments.author", "username")
         .then(mav => {
-            res.json({ mav: mav })
+            const username = req.session.username
+            const loggedIn = req.session.loggedIn
+            const userId = req.session.userId
+            // res.json({ fruit: fruit })
+            res.render('mavs/show', { mav, username, loggedIn, userId })
         })
         .catch(err => console.log(err))
 })
